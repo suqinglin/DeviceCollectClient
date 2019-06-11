@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/btn_main_scan_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="scanQr"
+            android:text="Scan Qr" />
+
+        <TextView
+            android:id="@+id/tv_main_qr_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/qr_result_pre"/>
+
+        <Button
+            android:id="@+id/btn_main_select_tools"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Tools"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_main_select_tools_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/select_tools_result_pre"/>
+
+        <Button
+            android:id="@+id/btn_main_read_device_info_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read Device Info first"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_main_device_info_first_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/device_info_first_result_pre"/>
+
+        <Button
+            android:id="@+id/btn_main_get_token"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get Token"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_main_token_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/token_result_pre"/>
+
+        <LinearLayout
+            android:id="@+id/ll_main_write_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_main_write_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write Token"/>
+
+            <Button
+                android:id="@+id/btn_main_write_mac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write Mac"/>
+
+            <Button
+                android:id="@+id/btn_main_write_sn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write Sn"/>
+
+            <Button
+                android:id="@+id/btn_main_write_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write Time"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/edt_main_manuf_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Input Manuf Id"/>
+                <Button
+                    android:id="@+id/btn_main_write_manuf_id"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Write Manuf Id"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/edt_main_tool_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Input Tool Id"/>
+                <Button
+                    android:id="@+id/btn_main_write_tool_id"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Write Tool Id"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_main_write_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Write Result -> "/>
+
+            <Button
+                android:id="@+id/btn_main_read_device_info_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Read Device Info Second"/>
+
+            <TextView
+                android:id="@+id/tv_main_device_info_second_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/device_info_second_result_pre"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_main_finish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Finish"/>
+    </LinearLayout>
+</ScrollView>

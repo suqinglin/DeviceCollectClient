@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UUID:"/>
+
+        <EditText
+            android:id="@+id/edt_test_uuid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="00112233445566778899aabbccddeeff"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_test_mac_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Mac And Token"/>
+
+    <TextView
+        android:id="@+id/tv_test_mac_token_result"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Model:"/>
+
+        <EditText
+            android:id="@+id/edt_test_model"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="NL_GWF03A"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hardware Version:"/>
+
+        <EditText
+            android:id="@+id/edt_test_hw_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1.0.0"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manufacturer:"/>
+
+        <EditText
+            android:id="@+id/edt_test_manufacturer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="nexless"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_test_upload_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="upload device info"/>
+
+    <TextView
+        android:id="@+id/tv_test_upload_device_result"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btn_test_genera_qr_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate qr code"/>
+
+    <ImageView
+        android:id="@+id/iv_test_qr_show"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
+    </LinearLayout>
+</ScrollView>
