@@ -2,6 +2,7 @@ package com.nexless.devicecollect.httpservice;
 
 import com.nexless.devicecollect.model.LoginResponse;
 import com.nexless.devicecollect.model.MacAndTokenResponse;
+import com.nexless.devicecollect.model.ManufListResponse;
 import com.nexless.devicecollect.model.TResponse;
 import com.nexless.devicecollect.model.UploadDeviceInfoResponse;
 import io.reactivex.Observable;
@@ -43,4 +44,13 @@ public interface ApiService {
             @Field("createTime") long createTime,
             @Field("token") String token
     );
+
+    @FormUrlEncoded
+    @POST("/device/getDeviceToken")
+    Observable<TResponse<UploadDeviceInfoResponse>> getDeviceToken(
+            @Field("mac") String mac
+    );
+
+    @POST("/manuf/list")
+    Observable<TResponse<ManufListResponse>> getManufList();
 }

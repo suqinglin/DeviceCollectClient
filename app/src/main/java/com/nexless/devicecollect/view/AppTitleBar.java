@@ -80,15 +80,11 @@ public class AppTitleBar extends RelativeLayout
 			return scanForActivity(((ContextWrapper) cont).getBaseContext());
 		return null;
 	}
-	private OnClickListener listener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View arg0) {
-			Activity activity = scanForActivity(getContext());
-			if(activity != null)
-			{
-				activity.finish();
-			}
+	private OnClickListener listener = arg0 -> {
+		Activity activity = scanForActivity(getContext());
+		if(activity != null)
+		{
+			activity.finish();
 		}
 	};
 	private void setAttrs(Context context, AttributeSet attrs)

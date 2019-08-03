@@ -27,7 +27,9 @@ public class DeviceUtil {
             String content = info.split(":")[1];
             switch (title) {
                 case DeviceInfo.UUID:
-                    deviceInfo.setUuid(content);
+                    if (!"00".equals(content)) {
+                        deviceInfo.setUuid(content);
+                    }
                     break;
                 case DeviceInfo.MAC:
                     deviceInfo.setMac(content);

@@ -38,11 +38,15 @@ public class SearchDeviceActivity extends BaseActivity implements AdapterView.On
     private ListView mLvScanDevice;
     private NexlessBluetoothScanner mBluetoothScanner;
     private Map<String, BluetoothDevice> mFoundDevicesMap = new HashMap<>(); // 搜索到的设备
+    private boolean isSelectTool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_device);
+
+        isSelectTool = getIntent().getBooleanExtra(AppConstants.EXTRA_IS_SELECT_TOOL, false);
+
         mLvScanDevice = findViewById(R.id.comm_listview_list);
         mAdapter = new PAdapter<SearchDeviceBean>(this, mScanDeviceList, R.layout.item_device) {
             @Override
@@ -84,7 +88,11 @@ public class SearchDeviceActivity extends BaseActivity implements AdapterView.On
     };
 
     private void addDevice(BluetoothDevice device, int rssi) {
-        if (!mFoundDevicesMap.containsKey(device.getAddress()) && !TextUtils.isEmpty(device.getName()) && device.getName().contains("BST_")) {
+        boolean add = !mFoundDevicesMap.containsKey(device.getAddress()) && !TextUtils.isEmpty(device.getName());
+        if (isSelectTool) {
+            add = add && device.getName().contains("BST_");
+        }
+        if (add) {
             mFoundDevicesMap.put(device.getAddress(), device);
 //            DeviceDB deviceDB = LitePal.where("devMac = ?", device.getAddress()).findFirst(DeviceDB.class);
 //            mScanDeviceList.add(new SearchDeviceBean(device, rssi, deviceDB != null));

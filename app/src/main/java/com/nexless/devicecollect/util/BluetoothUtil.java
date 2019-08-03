@@ -26,20 +26,21 @@ public class BluetoothUtil {
         this.mac = mac;
     }
 
-    public void sendCommand(String cmd, SendCmdCallBack callBack) {
+    public void sendCommand(String cmd, boolean hasPrdAck, SendCmdCallBack callBack) {
         byte[] sendData = Encrypt.sendCommandEncrypt(cmd);
         CommLog.logE("BluetoothUtil", "sendData:" + Hex.encodeHexString(sendData).toUpperCase());
         ConnectionHelper.getInstance().bleCommunication(
                 mac,
                 mac,
                 null,
+                hasPrdAck,
                 sendData,
                 true,
                 new BluetoothListener() {
 
                     @Override
                     public void onDataChange(@Nullable byte[] data) {
-                        callBack.onSuccess(new String(data).replace("\r\n", ""));
+                        callBack.onSuccess(new String(data));
                     }
 
                     @Override
@@ -51,7 +52,7 @@ public class BluetoothUtil {
                     public void onConnStatusSucc(int status) {
 
                     }
-                }, 3000);
+                }, 15000);
     }
 
     public interface SendCmdCallBack {

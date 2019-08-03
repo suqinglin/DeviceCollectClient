@@ -1,6 +1,7 @@
 package com.nexless.ccommble.conn
 
 import android.bluetooth.*
+import com.nexless.ccommble.codec.binary.Hex
 import com.nexless.ccommble.util.CommLog
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,12 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * 蓝牙连接，通知，数据等回调
  */
-class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, listener: BluetoothListener) : BluetoothGattCallback() {
+class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, hasPrdAck: Boolean, listener: BluetoothListener) : BluetoothGattCallback() {
     val TAG = this.javaClass.simpleName
     private var devName: String = ""
     private var dataPackages: DataPackages? = null
     private var receiveData: ByteArray? = null
     private var endIdentify: Array<String>? = null
+    private var hasPrdAck: Boolean
     private val bluetoothListener: BluetoothListener
     private var bluetoothStatus: AtomicInteger
     private var timerConnTimeout: Disposable? = null
@@ -34,6 +36,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     init {
         this.devName = devName
         this.endIdentify = endIdentify
+        this.hasPrdAck = hasPrdAck
         bluetoothListener = listener
         bluetoothStatus = AtomicInteger(ConnectionConstants.STATUS_CONN_START)
         timerConnTimeout = Observable.timer(5000, TimeUnit.MILLISECONDS)
@@ -219,31 +222,98 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
         super.onCharacteristicChanged(gatt, characteristic)
         closeTimerReadTimeout()
-        if (bluetoothStatus.compareAndSet(ConnectionConstants.STATUS_DATA_WRITE_SUCC, ConnectionConstants.STATUS_DATA_READING)) {
+        if (bluetoothStatus.compareAndSet(ConnectionConstants.STATUS_DATA_WRITE_SUCC, ConnectionConstants.STATUS_CONN_ENNOTIFY_SUCC)) {
             receiveData = null
         }
 //        if (bluetoothStatus.get() == ConnectionConstants.STATUS_DATA_READ_COMPLTED) {
 //            return
 //        }
         val temp = characteristic!!.value
-        CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged temp:${String(temp)}")
+        CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged temp hex:${Hex.encodeHexString(temp)}")
+        var str = String(temp)
+        CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged temp string:$str")
 
-        receiveData = if (receiveData == null) {
-            temp
+        receiveStart(temp)
+        if (receiveData == null) {
+//            CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged hasPrdAck:$hasPrdAck")
+//            if (hasPrdAck) {
+//                if (receiveStart(temp)) {
+//                    val endIdx = getEndIndex(temp, true)
+//                    CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged endIdx:$endIdx")
+//                    receiveData = temp.copyOfRange(getStartIndex(temp), endIdx)
+//                    CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged receiveData:${String(receiveData!!)}")
+//                }
+//            } else {
+                receiveData = temp
+//            }
         } else {
-            mergeByte(receiveData!!, temp)
+//            val endIdx = getEndIndex(temp, false)
+//            receiveData = mergeByte(receiveData!!, temp.copyOfRange(0, endIdx))
+            receiveData = mergeByte(receiveData!!, temp)
         }
 
-        if (receiveEnd()) {
+        if (receiveData != null && receiveEnd()) {
+            CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged checkEnd:${receiveEnd()}")
 //            bluetoothStatus.set(ConnectionConstants.STATUS_DATA_READ_COMPLTED)
+            if (hasPrdAck) {
+                val startIdx = getStartIndex(receiveData!!)
+                val endIdx = getEndIndex(startIdx, receiveData!!)
+                receiveData = receiveData!!.copyOfRange(startIdx, endIdx)
+            }
             bluetoothListener.onDataChange(receiveData)
             bluetoothStatus.set(ConnectionConstants.STATUS_CONN_ENNOTIFY_SUCC)
             receiveData = null
+        } else {
+            timerReadTimeout = Observable.timer(10, TimeUnit.SECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_DATA_READ_TIMEOUT)
+                    }
         }
     }
 
+    private fun getStartIndex(temp: ByteArray): Int{
+        return String(temp).indexOf("#PrdAck") + 7
+    }
+
+    private fun getEndIndex(startIndex: Int, temp: ByteArray): Int{
+        return String(temp).indexOf("\r\n", startIndex) + 2
+//        val tempStr = String(temp)
+//        val endIdx: Int
+//        endIdx = if (tempStr.contains("\r\n")) {
+//            if (firstPkg && String(temp).lastIndexOf("\r\n") == 0) {
+//                temp.size
+//            } else {
+//                String(temp).lastIndexOf("\r\n") + 2
+//            }
+//        } else {
+//            temp.size
+//        }
+//        return endIdx
+    }
+
+    private fun receiveStart(temp: ByteArray): Boolean {
+        return String(temp).contains("#PrdAck")
+    }
+
     private fun receiveEnd(): Boolean {
-        return String(receiveData!!).contains("\r\n")
+        if (String(receiveData!!).contains("\r\n")) {
+            if (hasPrdAck) {
+                if (receiveStart(receiveData!!)) {
+                    val endIndex = String(receiveData!!).lastIndexOf("\r\n")
+                    val ackIndex = String(receiveData!!).indexOf("#PrdAck")
+                    return ackIndex < endIndex
+                } else {
+                    return false
+                }
+            } else {
+                return true
+            }
+        } else {
+//            CommLog.logE(TAG, "${bluetoothStatus.get()} onCharacteristicChanged checkEnd:not contains \\r\\d")
+            return false
+        }
     }
 
     fun setCanReceiveData() {
@@ -299,10 +369,11 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
         }
     }
 
-    fun writeData(dataPackages: DataPackages, endIdentify: Array<String>?) {
+    fun writeData(dataPackages: DataPackages, endIdentify: Array<String>?, hasPrdAck: Boolean) {
         CommLog.logE(TAG, "writeData bluetoothStatus = " + bluetoothStatus.get())
         this.dataPackages = dataPackages
         this.endIdentify = endIdentify
+        this.hasPrdAck = hasPrdAck
         if (bluetoothStatus.get() == ConnectionConstants.STATUS_CONN_ENNOTIFY_SUCC) {
             writeFirstPageData()
         }

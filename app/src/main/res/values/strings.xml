@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DeviceCollectClient</string>
+    <string name="app_name">设备信息采集</string>
     <!-- 异常 -->
     <string name="timeout_exception">请求超时，请重试</string>
     <string name="network_error">当前网络异常，请检查网络后重试</string>
@@ -7,7 +7,14 @@
     <string name="data_format_error">服务端返回数据格式异常</string>
     <string name="qr_result_pre"><![CDATA[Qr Result -> %s]]></string>
     <string name="device_info_first_result_pre"><![CDATA[Device Info First Result -> %s]]></string>
-    <string name="device_info_second_result_pre"><![CDATA[Device Info Second Result -> %s]]></string>
+    <string name="device_info_second_result_pre"><![CDATA[Device Info Result -> %s]]></string>
     <string name="select_tools_result_pre"><![CDATA[Select Tools Result -> %s]]></string>
     <string name="token_result_pre"><![CDATA[Token Result -> %s]]></string>
+    <string name="tool_pre">Tool: %s</string>
+    <string name="manuf_pre">Manuf: %s</string>
+    <string name="upload_result_pre"><![CDATA[Upload Result -> %s]]></string>
+
+    <array name="gateway">
+        <item>GWF_</item>
+    </array>
 </resources>

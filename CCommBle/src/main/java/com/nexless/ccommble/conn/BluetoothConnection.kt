@@ -15,11 +15,12 @@ import java.util.concurrent.TimeUnit
 /**
  * 蓝牙连接
  */
-class BluetoothConnection(context: Context,devName: String, mac: String, endIdentify:Array<String>?,listener: BluetoothListener) {
+class BluetoothConnection(context: Context,devName: String, mac: String, endIdentify:Array<String>?, hasPrdAck: Boolean,listener: BluetoothListener) {
     private val TAG = "BluetoothConnectionCallback"
     private var mac: String
     private var devName: String
     private var endIdentify:Array<String>?
+    private var hasPrdAck: Boolean
     private var autoDisconnTime: Int
     private var reConnect: Boolean
     private val connStartTime: Long
@@ -41,8 +42,9 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
         this.mac = mac
         this.devName = devName
         this.endIdentify = endIdentify
+        this.hasPrdAck = hasPrdAck
         val device = bleAdapter.getRemoteDevice(mac)
-        createBluetoothCallback(devName,endIdentify,device)
+        createBluetoothCallback(devName,endIdentify,device, hasPrdAck)
     }
 
     fun disConnDevice() {
@@ -58,13 +60,13 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
         }
     }
 
-    fun sendData(time: Int, data: ByteArray, reConnect: Boolean, endIdentify: Array<String>?) {
+    fun sendData(time: Int, data: ByteArray, reConnect: Boolean, endIdentify: Array<String>?, hasPrdAck: Boolean) {
         CommLog.logE(TAG, "sendData data = " + String(data))
         closeTimerDelyDisconn()
         this.autoDisconnTime = time
         this.reConnect = reConnect
         this.sendData = data
-        bluetoothConnectionCallback?.writeData(DataPackages(data),endIdentify)
+        bluetoothConnectionCallback?.writeData(DataPackages(data),endIdentify, hasPrdAck)
     }
 
     fun setCanReceiveData() {
@@ -85,10 +87,10 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
         }
     }
 
-    private fun createBluetoothCallback(devName: String,endIdentify:Array<String>?,device: BluetoothDevice) {
+    private fun createBluetoothCallback(devName: String,endIdentify:Array<String>?,device: BluetoothDevice, hasPrdAck: Boolean) {
         closeTimerDelyDisconn()
         closeTimerDelyConn()
-        bluetoothConnectionCallback = BluetoothConnectionCallback(devName,endIdentify,object : BluetoothClassListener() {
+        bluetoothConnectionCallback = BluetoothConnectionCallback(devName,endIdentify, hasPrdAck,object : BluetoothClassListener() {
             override fun onConnStatusSucc(status: Int) {
                 super.onConnStatusSucc(status)
                 CommLog.logE(TAG, "onConnStatusSucc status = $status")
@@ -111,9 +113,9 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
                                 CommLog.logE(TAG, "onConnStatusFail timerDelyConn")
-                                createBluetoothCallback(devName,endIdentify,device)
+                                createBluetoothCallback(devName,endIdentify,device, hasPrdAck)
                                 if (sendData != null) {
-                                    bluetoothConnectionCallback?.writeData(DataPackages(sendData!!), endIdentify)
+                                    bluetoothConnectionCallback?.writeData(DataPackages(sendData!!), endIdentify, hasPrdAck)
                                 }
                             }
                 } else {
@@ -139,6 +141,7 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
                             .subscribe {
                                 CommLog.logE(TAG, "autoDisconnTime.toLong() == 0")
                                 bluetoothConnectionCallback?.disConnGatt()
+                                bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_INTERUPT)
                             }
                 }
             }

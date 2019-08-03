@@ -55,9 +55,9 @@ class ConnectionHelper private constructor(){
      * @param endIdentify Array<String>? 数据结束符
      * @param listener BluetoothListener 回调
      */
-    fun connDevice(devName: String,mac: String,endIdentify:Array<String>?,listener: BluetoothListener){
+    fun connDevice(devName: String,mac: String,endIdentify:Array<String>?, hasPrdAck: Boolean,listener: BluetoothListener){
         listenerMap[mac] = listener
-        createConnection(devName,mac,endIdentify)
+        createConnection(devName,mac,endIdentify, hasPrdAck)
     }
 
     /**
@@ -85,13 +85,13 @@ class ConnectionHelper private constructor(){
      * @param listener BluetoothListener 回调
      * @param delayDisConnTime Int 延迟断开时间，默认3s
      */
-    fun bleCommunication(devName: String, mac: String, endIdentify: Array<String>?, data: ByteArray, reConnect: Boolean, listener: BluetoothListener,delayDisConnTime:Int = 3000){
+    fun bleCommunication(devName: String, mac: String, endIdentify: Array<String>?, hasPrdAck: Boolean, data: ByteArray, reConnect: Boolean, listener: BluetoothListener,delayDisConnTime:Int = 3000){
         if(connectionMap[mac] == null){
-            connDevice(devName,mac,endIdentify,listener)
+            connDevice(devName,mac,endIdentify, hasPrdAck,listener)
         }else{
             listenerMap[mac] = listener
         }
-        connectionMap[mac]?.sendData(delayDisConnTime,data, reConnect,endIdentify)
+        connectionMap[mac]?.sendData(delayDisConnTime,data, reConnect,endIdentify, hasPrdAck)
     }
 
     /**
@@ -117,12 +117,12 @@ class ConnectionHelper private constructor(){
      * @param mac String 设备mac
      * @param endIdentify Array<String>? 结束符
      */
-    private fun createConnection(devName: String,mac:String,endIdentify:Array<String>?){
+    private fun createConnection(devName: String,mac:String,endIdentify:Array<String>?, hasPrdAck: Boolean){
         if(context == null){
             throw IllegalArgumentException("hava you init sdk ?")
         }
         if(connectionMap[mac] == null){
-            val connection = BluetoothConnection(context!!,devName,mac,endIdentify,object: BluetoothClassListener(){
+            val connection = BluetoothConnection(context!!,devName,mac,endIdentify, hasPrdAck,object: BluetoothClassListener(){
                 override fun onConnStatusSucc(status: Int) {
                     super.onConnStatusSucc(status)
                     CommLog.logE(TAG, "onConnStatusSucc2 status = $status")

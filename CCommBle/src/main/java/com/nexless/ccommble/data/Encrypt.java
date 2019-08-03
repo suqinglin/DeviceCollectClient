@@ -83,12 +83,16 @@ public class Encrypt {
     }
 
     public static byte[] sendCommandEncrypt(String cmd) {
-        cmd = " " + cmd + " ";
+//        cmd = cmd + " ";
         byte[] buf = cmd.getBytes(StandardCharsets.US_ASCII);
-        byte[] endBuf = new byte[]{0x0D, 0x0A};
-        return ByteBuffer.allocate(buf.length + 2)
+        byte[] endBuf = new byte[]{0x0D};
+        return ByteBuffer.allocate(buf.length + 1)
                 .put(buf)
                 .put(endBuf)
                 .array();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Hex.encodeHexString(sendCommandEncrypt("PrdClr")));
     }
 }

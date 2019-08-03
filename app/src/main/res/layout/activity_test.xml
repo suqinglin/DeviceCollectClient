@@ -1,117 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.nexless.devicecollect.view.AppTitleBar
+        android:id="@+id/titlebar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        app:leftBtn="true"
+        app:title="测试"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="@drawable/selector_item"
+        android:padding="12dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UUID:"/>
+            android:text="BT RSSI"
+            android:textColor="#333333"
+            android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/edt_test_uuid"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/iv_test_rssi"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00112233445566778899aabbccddeeff"/>
+            android:src="@drawable/ic_rssi_none"
+            android:layout_marginLeft="12dp"/>
+
+        <TextView
+            android:id="@+id/tv_test_rssi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1"
+            android:gravity="right" />
+
+        <ImageView
+            android:id="@+id/iv_test_rssi_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:tint="#666666"
+            android:src="@drawable/ic_open_device_refresh" />
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"/>
+
     <Button
-        android:id="@+id/btn_test_mac_token"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_test_prdreg"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Mac And Token"/>
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        android:text="PrdReg"/>
+
 
     <TextView
-        android:id="@+id/tv_test_mac_token_result"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:id="@+id/tv_test_reg_log"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Model:"/>
-
-        <EditText
-            android:id="@+id/edt_test_model"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="NL_GWF03A"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hardware Version:"/>
-
-        <EditText
-            android:id="@+id/edt_test_hw_version"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1.0.0"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Manufacturer:"/>
-
-        <EditText
-            android:id="@+id/edt_test_manufacturer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="nexless"/>
-    </LinearLayout>
+        android:text=""
+        android:padding="8dp"
+        android:background="@drawable/bg_text_area" />
 
     <Button
-        android:id="@+id/btn_test_upload_device"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_test_prdfa"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="upload device info"/>
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        android:text="PrdFa"/>
 
     <TextView
-        android:id="@+id/tv_test_upload_device_result"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:id="@+id/tv_test_fa_log"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
+        android:text=""
+        android:padding="8dp"
+        android:background="@drawable/bg_text_area" />
 
     <Button
-        android:id="@+id/btn_test_genera_qr_code"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_test_prdpara"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Generate qr code"/>
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        android:text="PrdPara"/>
 
-    <ImageView
-        android:id="@+id/iv_test_qr_show"
-        android:layout_width="200dp"
-        android:layout_height="200dp" />
-    </LinearLayout>
-</ScrollView>
+
+    <TextView
+        android:id="@+id/tv_test_para_log"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text=""
+        android:padding="8dp"
+        android:background="@drawable/bg_text_area" />
+</LinearLayout>

@@ -58,6 +58,10 @@ object ConnectionConstants{
      */
     const val STATUS_DATA_READ_TIMEOUT = 3002
     /**
+     * 连接中断
+     */
+    const val STATUS_CONN_INTERUPT = 3003
+    /**
      * 写数据完成
      */
     const val STATUS_DATA_WRITE_SUCC = 4001
@@ -72,9 +76,12 @@ object ConnectionConstants{
 }
 //UUID
 internal const val UUID_SERVICE_WECHAT = "0000fee7-0000-1000-8000-00805f9b34fb"
-internal const val UUID_SERVICE = "000018f0-0000-1000-8000-00805f9b34fb"
-internal const val UUID_READ = "00002af0-0000-1000-8000-00805f9b34fb"
-internal const val UUID_WRITE = "00002af1-0000-1000-8000-00805f9b34fb"
+//internal const val UUID_SERVICE = "000018f0-0000-1000-8000-00805f9b34fb"
+internal const val UUID_SERVICE = "000018f1-0000-1000-8000-00805f9b34fb"
+//internal const val UUID_READ = "00002af0-0000-1000-8000-00805f9b34fb"
+internal const val UUID_READ = "00002af2-0000-1000-8000-00805f9b34fb"
+//internal const val UUID_WRITE = "00002af1-0000-1000-8000-00805f9b34fb"
+internal const val UUID_WRITE = "00002af3-0000-1000-8000-00805f9b34fb"
 internal const val UUID_DESCRIPTION = "00002902-0000-1000-8000-00805f9b34fb"
 internal const val UUID_SINGLE = "00002afc-0000-1000-8000-00805f9b34fb"
 

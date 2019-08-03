@@ -21,6 +21,8 @@ public class BleStatusUtil {
             return "写入数据失败";
         } else if (status == ConnectionConstants.STATUS_DATA_READ_TIMEOUT) {
             return "读取数据超时";
+        } else if (status == ConnectionConstants.STATUS_CONN_INTERUPT) {
+            return "连接已断开";
         } else {
             return "连接设备失败";
         }

@@ -61,7 +61,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 AppPreference.putString(AppPreference.USER_PHONE, userPhone);
                 AppPreference.putString(AppPreference.USER_PASSWORD, password);
                 AppPreference.putString(AppPreference.LOGIN_TOKEN, loginResponseTResponse.data.getUserToken());
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                startActivity(new Intent(LoginActivity.this, InitializeActivity.class));
                 LoginActivity.this.finish();
             } else {
                 showToast(loginResponseTResponse.message);
