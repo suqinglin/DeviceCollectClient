@@ -21,12 +21,14 @@ import org.jetbrains.annotations.Nullable;
 public class BluetoothUtil {
 
     private String mac;
+    private SendCmdCallBack cmdCallBack;
 
     public BluetoothUtil(String mac) {
         this.mac = mac;
     }
 
     public void sendCommand(String cmd, boolean hasPrdAck, SendCmdCallBack callBack) {
+        cmdCallBack = callBack;
         byte[] sendData = Encrypt.sendCommandEncrypt(cmd);
         CommLog.logE("BluetoothUtil", "sendData:" + Hex.encodeHexString(sendData).toUpperCase());
         ConnectionHelper.getInstance().bleCommunication(
@@ -40,12 +42,16 @@ public class BluetoothUtil {
 
                     @Override
                     public void onDataChange(@Nullable byte[] data) {
-                        callBack.onSuccess(new String(data));
+                        if (cmdCallBack != null) {
+                            cmdCallBack.onSuccess(new String(data));
+                        }
                     }
 
                     @Override
                     public void onConnStatusFail(int status) {
-                        callBack.onFailure(BleStatusUtil.getConnectStatusMsg(status));
+                        if (cmdCallBack != null) {
+                            callBack.onFailure(BleStatusUtil.getConnectStatusMsg(status));
+                        }
                     }
 
                     @Override
@@ -53,6 +59,10 @@ public class BluetoothUtil {
 
                     }
                 }, 15000);
+    }
+
+    public void cancel() {
+        cmdCallBack = null;
     }
 
     public interface SendCmdCallBack {

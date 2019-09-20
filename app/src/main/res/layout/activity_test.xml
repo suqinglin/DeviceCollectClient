@@ -63,7 +63,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:layout_marginTop="8dp"
-        android:text="PrdReg"/>
+        android:text="PrdA"/>
 
 
     <TextView

@@ -274,7 +274,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     }
 
     private fun getStartIndex(temp: ByteArray): Int{
-        return String(temp).indexOf("#PrdAck") + 7
+        return String(temp).toLowerCase().indexOf("#PrdAck".toLowerCase()) + 7
     }
 
     private fun getEndIndex(startIndex: Int, temp: ByteArray): Int{
@@ -294,7 +294,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     }
 
     private fun receiveStart(temp: ByteArray): Boolean {
-        return String(temp).contains("#PrdAck")
+        return String(temp).toLowerCase().contains("#PrdAck".toLowerCase())
     }
 
     private fun receiveEnd(): Boolean {
@@ -302,7 +302,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
             if (hasPrdAck) {
                 if (receiveStart(receiveData!!)) {
                     val endIndex = String(receiveData!!).lastIndexOf("\r\n")
-                    val ackIndex = String(receiveData!!).indexOf("#PrdAck")
+                    val ackIndex = String(receiveData!!).toLowerCase().indexOf("#PrdAck".toLowerCase())
                     return ackIndex < endIndex
                 } else {
                     return false

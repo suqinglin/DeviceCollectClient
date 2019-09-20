@@ -2,20 +2,18 @@ package com.nexless.devicecollect.activity;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nexless.ccommble.conn.ConnectionHelper;
 import com.nexless.ccommble.scan.NexlessBluetoothScanner;
-import com.nexless.ccommble.util.CommLog;
 import com.nexless.devicecollect.AppConstants;
 import com.nexless.devicecollect.R;
 import com.nexless.devicecollect.model.SearchDeviceBean;
 import com.nexless.devicecollect.util.BluetoothUtil;
 
-import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -34,7 +32,7 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
     private TextView mTvParaLog;
     private NexlessBluetoothScanner mBluetoothScanner;
     private Disposable timerSearchTimeout;
-    private static final int OPT_PRD_REG = 0x3001;
+    private static final int OPT_PRD_A = 0x3001;
     private static final int OPT_PRD_FA = 0x3002;
     private static final int OPT_PRD_PARA = 0x3003;
 
@@ -117,13 +115,14 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void sendCommand(String cmd, int opt) {
+        mDialogHelper.showProgressDialog();
         new BluetoothUtil(mSearchDevice.device.getAddress())
                 .sendCommand(cmd, false, new BluetoothUtil.SendCmdCallBack() {
                     @Override
                     public void onSuccess(String result) {
                         mDialogHelper.dismissProgressDialog();
                         switch (opt) {
-                            case OPT_PRD_REG:
+                            case OPT_PRD_A:
                                 mTvRegLog.append(result);
                                 break;
                             case OPT_PRD_FA:
@@ -133,13 +132,16 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
                                 mTvParaLog.append(result);
                                 break;
                         }
+                        if (result.toLowerCase().contains("#prdackok")) {
+                            ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
+                        }
                     }
 
                     @Override
                     public void onFailure(String message) {
                         mDialogHelper.dismissProgressDialog();
                         switch (opt) {
-                            case OPT_PRD_REG:
+                            case OPT_PRD_A:
                                 mTvRegLog.append("\n" + message);
                                 break;
                             case OPT_PRD_FA:
@@ -162,7 +164,8 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_test_prdreg:
-                sendCommand("PrdReg 20", OPT_PRD_REG);
+//                sendCommand("PrdReg 20", OPT_PRD_A);
+                sendCommand("PrdA", OPT_PRD_A);
                 break;
             case R.id.btn_test_prdfa:
                 sendCommand("PrdFa", OPT_PRD_FA);

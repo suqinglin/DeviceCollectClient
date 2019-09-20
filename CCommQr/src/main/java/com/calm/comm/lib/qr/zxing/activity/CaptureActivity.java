@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Surface;
@@ -46,6 +47,7 @@ import com.google.zxing.qrcode.QRCodeReader;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 /**
@@ -160,7 +162,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback {
                                 Intent resultIntent = new Intent();
                                 Bundle bundle = new Bundle();
                                 bundle.putString(INTENT_EXTRA_KEY_QR_SCAN ,result.getText());
-//                                Logger.d("saomiao",result.getText());
+//                                Log.d("saomiao->",result.getText());
 //                                bundle.putParcelable("bitmap",result.get);
                                 resultIntent.putExtras(bundle);
                                 CaptureActivity.this.setResult(RESULT_CODE_QR_SCAN, resultIntent);

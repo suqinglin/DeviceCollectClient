@@ -23,4 +23,9 @@ public class ExampleInstrumentedTest {
 
         assertEquals("com.nexless.devicecollect", appContext.getPackageName());
     }
+
+    @Test
+    public void test1() {
+        System.out.println("----------------" + String.format("%010d", "945"));
+    }
 }

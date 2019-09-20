@@ -67,4 +67,8 @@ public class DeviceUtil {
         int ver3 = version & (0xFF >> 2);
         return ver1 + "." + ver2 + "." + ver3;
     }
+
+    public static boolean supportFun(int ver, int fun) {
+        return (ver & fun) != 0;
+    }
 }
