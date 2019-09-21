@@ -223,7 +223,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         Observable<TResponse<UploadDeviceInfoResponse>> observable
                 = ServiceFactory.getInstance().getApiService().uploadDeviceInfo(
                 mDeviceInfo.getUuid(),
-                mDevMac,
+                mDeviceInfo.getMac(),
                 mDeviceInfo.getSn(),
                 mDeviceInfo.getModel(),
                 mDeviceInfo.getHwVer(),
@@ -250,7 +250,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     }
 
     private boolean checkResult(DeviceInfo deviceInfo, int version) {
-        // 如果支持UUID功能位，则判断读取UUID是否与写入一直
+        // 如果支持UUID功能位，则判断读取UUID是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_UUID)) {
             if (TextUtils.isEmpty(deviceInfo.getUuid())) {
                 tvMessage.append("UUID无效\n");
@@ -259,31 +259,31 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         } else {
             mDeviceInfo.setUuid("FFFFFFFFFFFFFFFF");
         }
-        // 如果支持MAC功能位，则判断读取MAC是否与写入一直
+        // 如果支持MAC功能位，则判断读取MAC是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_MAC)) {
             if (!mDevMac.equals(deviceInfo.getMac())) {
                 tvMessage.append("MAC写入失败\n");
                 return false;
             }
-        } else {
+        } else if ("0".equals(mDeviceInfo.getMac())) {
             mDeviceInfo.setMac("FFFFFFFFFFFFFFFF");
         }
-        // 如果支持SN功能位，则判断读取SN是否与写入一直
+        // 如果支持SN功能位，则判断读取SN是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_SN)) {
             if (!mSn.equals(String.format("%010d", Integer.valueOf(deviceInfo.getSn())))) {
                 tvMessage.append("SN写入失败\n");
                 return false;
             }
-        } else {
+        } else if ("0".equals(mSn)){
             mDeviceInfo.setSn(String.valueOf(Long.valueOf("FFFFFFFF", 16)));
         }
-        // 如果支持TIME功能位，则判断读取TIME是否与写入一直
+        // 如果支持TIME功能位，则判断读取TIME是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_TIME)) {
             if (mTimeStamp != deviceInfo.getTime()) {
                 tvMessage.append("Time写入失败\n");
                 return false;
             }
-        } else {
+        } else if (mDeviceInfo.getTime() == 0) {
             mDeviceInfo.setTime(Long.valueOf("FFFFFFFF", 16));
         }
         if (!DeviceUtil.supportFun(version, Function.SUPPORT_HW_VER)) {
@@ -292,22 +292,22 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         if (!DeviceUtil.supportFun(version, Function.SUPPORT_FW_VER)) {
             mDeviceInfo.setFwVer(DeviceUtil.convertVersion556(Integer.valueOf("0800", 16)));
         }
-        // 如果支持MANUF功能位，则判断读取MANUF是否与写入一直
+        // 如果支持MANUF功能位，则判断读取MANUF是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_MANUF)) {
             if (manufInfo.getId() != deviceInfo.getManufId()) {
                 tvMessage.append("Manuf Id写入失败\n");
                 return false;
             }
-        } else {
+        } else if (manufInfo.getId() == 0){
             mDeviceInfo.setManufId(Integer.valueOf("FFFF", 16));
         }
-        // 如果支持TOOL功能位，则判断读取TOOL是否与写入一直
+        // 如果支持TOOL功能位，则判断读取TOOL是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_TOOL)) {
             if (isSelectTool && mToolId != deviceInfo.getToolId()) {
                 tvMessage.append("Tool Id写入失败\n");
                 return false;
             }
-        } else {
+        } else if (mToolId == 0){
             mDeviceInfo.setToolId(Integer.valueOf("FFFF", 16));
         }
         return true;

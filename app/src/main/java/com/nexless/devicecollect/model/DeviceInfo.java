@@ -99,5 +99,18 @@ public class DeviceInfo {
         this.toolId = toolId;
     }
 
-
+    @Override
+    public String toString() {
+        return "DeviceInfo{" +
+                "uuid='" + uuid + '\'' +
+                ", mac='" + mac + '\'' +
+                ", model='" + model + '\'' +
+                ", sn='" + sn + '\'' +
+                ", time=" + time +
+                ", hwVer='" + hwVer + '\'' +
+                ", fwVer='" + fwVer + '\'' +
+                ", manufId=" + manufId +
+                ", toolId=" + toolId +
+                '}';
+    }
 }

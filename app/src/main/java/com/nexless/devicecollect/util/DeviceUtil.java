@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.nexless.ccommble.codec.DecoderException;
 import com.nexless.ccommble.codec.binary.Hex;
+import com.nexless.ccommble.util.CommLog;
 import com.nexless.devicecollect.model.DeviceInfo;
 
 /**
@@ -62,9 +63,11 @@ public class DeviceUtil {
     }
 
     public static String convertVersion556(int version) {
+//        CommLog.logE("version before:" + version);
         int ver1 = (version >> 11) & 0xFF;
-        int ver2 = (version & (0xFF >> 5)) >> 6;
+        int ver2 = (version & (0xFFFF >> 5)) >> 6;
         int ver3 = version & (0xFF >> 2);
+//        CommLog.logE("version after:" + ver1 + "." + ver2 + "." + ver3);
         return ver1 + "." + ver2 + "." + ver3;
     }
 
