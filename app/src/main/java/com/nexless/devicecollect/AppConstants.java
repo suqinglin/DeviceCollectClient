@@ -9,7 +9,6 @@ public class AppConstants {
     public static final boolean DEBUG = true;
 //    public static final String SERVER_URL = "http://183.66.233.86:8089/";
     public static final String SERVER_URL = "http://120.92.114.123:8089/";
-//    public static final String SERVER_URL = "http://192.168.88.139:8089/";
     public static final String APPPREFERENCE_FILE_NAME = "DeviceCollect";
 
     public static final String RESPONSE_CODE_SUCCESS = "200";

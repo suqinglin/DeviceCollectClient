@@ -14,17 +14,17 @@ public class UploadDeviceInfoResponse {
 
     private String token;
 
-    private String uuid;
+//    private String uuid;
 
     private String model;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+//    public String getUuid() {
+//        return uuid;
+//    }
+//
+//    public void setUuid(String uuid) {
+//        this.uuid = uuid;
+//    }
 
     public String getModel() {
         return model;

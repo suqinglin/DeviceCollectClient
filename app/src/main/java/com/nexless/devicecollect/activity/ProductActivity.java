@@ -52,6 +52,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     private static final int ACTION_REQUEST_PERMISSIONS = 0x0001;
     private static final int REQ_SEARCH_DEVICE = 0x0002;
     private static final int REQ_QR_CODE = 0x1001;
+    private static final int OPT_READ_DEVICE_INFO_FIRST = 0x2000;
     private static final int OPT_READ_VERSION = 0x2001;
     private static final int OPT_SET_BR = 0x2002;
     private static final int OPT_WRITE_TOKEN = 0x3001;
@@ -75,6 +76,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     private String mRemark;
     private DeviceInfo mDeviceInfo;
     private String mToken;
+    private String mModel;
     private CommHandler mHandle = new CommHandler(this);
     private boolean isReaddingInfo = false;
     private boolean isSelectTool;
@@ -196,12 +198,14 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         RxHelper.getInstance().sendRequest(TAG, observable, response -> {
             if (response.isSuccess()) {
                 mToken = response.data.getToken();
-                tvMessage.setText(String.format(getString(R.string.token_result_pre), mToken) +
+                mModel = response.data.getModel();
+                tvMessage.setText(String.format(getString(R.string.token_result_pre), mModel + "," + Long.valueOf(mToken, 16)) +
                         "\n");
                 if (DeviceTypeUtil.isGateway(mRemark, ProductActivity.this)) {
                     sendCmdToDevice("PrdSetBr 57600", 0, true, OPT_SET_BR);
                 } else {
                     sendCmdToDevice("?PrdVer", 0, false, OPT_READ_VERSION);
+//                    sendCmdToDevice("?Info", 0, false, OPT_READ_DEVICE_INFO_FIRST);
                 }
             } else {
                 mDialogHelper.dismissProgressDialog();
@@ -313,10 +317,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         return true;
     }
 
-
     private void sendCmdToDeviceByFunPos(int ver, int opt) {
-        if (opt <= OPT_WRITE_TOKEN && DeviceUtil.supportFun(ver, Function.SUPPORT_TORKEN)) {
-            sendCmdToDevice("PrdTorken " + (Long.valueOf(mToken, 16) + 1), ver,
+        if (opt <= OPT_READ_DEVICE_INFO_FIRST && DeviceUtil.supportFun(ver, Function.SUPPORT_INFO)) {
+            sendCmdToDevice("?Info", ver, mHasPrdAck, OPT_READ_DEVICE_INFO_FIRST);
+        } else if (opt <= OPT_WRITE_TOKEN && DeviceUtil.supportFun(ver, Function.SUPPORT_TORKEN)) {
+            sendCmdToDevice("PrdTorken " + Long.valueOf(mToken, 16), ver,
                     mHasPrdAck, OPT_WRITE_TOKEN);
         } else if (opt <= OPT_WRITE_MAC && DeviceUtil.supportFun(ver, Function.SUPPORT_MAC)) {
             sendCmdToDevice("PrdMac " + new BigInteger(mDevMac, 16), ver,
@@ -373,6 +378,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                                         timerDelayTimeout = null;
                                                     }
                                                     sendCmdToDevice("?PrdVer", 0, true, OPT_READ_VERSION);
+//                                                    sendCmdToDevice("?Info", 0, true, OPT_READ_DEVICE_INFO_FIRST);
                                                 });
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
@@ -382,8 +388,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     if (result.contains("Bad Command")) {
                                         tvMessage.append("Read Version -> 1\n");
                                         mHasPrdAck = false;
-                                        sendCmdToDevice("PrdTorken " + new BigInteger(mToken, 16),
-                                                Integer.valueOf("07FF", 16), mHasPrdAck, OPT_WRITE_TOKEN);
+                                        sendCmdToDeviceByFunPos(Integer.valueOf("07FF", 16), OPT_READ_DEVICE_INFO_FIRST);
                                     } else if (result.contains("Ver:") && result.split
                                             ("Ver:").length >= 2) {
                                         String verStr = result.split("Ver:")[1];
@@ -391,17 +396,37 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         int version = Integer.valueOf(verStr, 16);
                                         mHasPrdAck = true;
                                         if (DeviceUtil.supportFun(version, Function.SUPPORT_FUN)) {
-                                            sendCmdToDeviceByFunPos(version, OPT_WRITE_TOKEN);
+                                            sendCmdToDeviceByFunPos(version, OPT_READ_DEVICE_INFO_FIRST);
                                         } else if (version == 2) {
-                                            sendCmdToDeviceByFunPos(Integer.valueOf("07FF", 16), OPT_WRITE_TOKEN);
+                                            sendCmdToDeviceByFunPos(Integer.valueOf("07FF", 16), OPT_READ_DEVICE_INFO_FIRST);
                                         } else if (version == 1) {
-                                            sendCmdToDeviceByFunPos(Integer.valueOf("0014", 16), OPT_WRITE_TOKEN);
+                                            sendCmdToDeviceByFunPos(Integer.valueOf("0014", 16), OPT_READ_DEVICE_INFO_FIRST);
 //                                            sendCmdToDevice("PrdMac " + new BigInteger(mDevMac, 16),
 //                                                    Integer.valueOf("0014", 16), mHasPrdAck, OPT_WRITE_MAC);
                                         }
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
                                         tvMessage.append("Read Version -> " + result + "\n");
+                                    }
+                                    break;
+                                case OPT_READ_DEVICE_INFO_FIRST:
+                                    tvMessage.append("Read Info -> " + result + "\n");
+                                    try {
+                                        mDeviceInfo = DeviceUtil.convertDeviceInfo(result);
+                                        if (mDeviceInfo != null) {
+                                            if (mModel.equals(mDeviceInfo.getModel())) {
+                                                sendCmdToDeviceByFunPos(ver, OPT_WRITE_TOKEN);
+                                            } else {
+                                                tvMessage.append("Read Info -> 二维码上的Model与设备中不一致！\n");
+                                                mDialogHelper.dismissProgressDialog();
+                                            }
+                                        } else {
+                                            mDialogHelper.dismissProgressDialog();
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        mDialogHelper.dismissProgressDialog();
+                                        tvMessage.append("Read Info -> 数据格式异常\n");
                                     }
                                     break;
                                 case OPT_WRITE_TOKEN:
