@@ -278,8 +278,8 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 tvMessage.append("SN写入失败\n");
                 return false;
             }
-        } else if ("0".equals(mSn)){
-            mDeviceInfo.setSn(String.valueOf(Long.valueOf("FFFFFFFF", 16)));
+        } else {
+            mDeviceInfo.setSn(mSn);
         }
         // 如果支持TIME功能位，则判断读取TIME是否与写入一致
         if (DeviceUtil.supportFun(version, Function.SUPPORT_TIME)) {
