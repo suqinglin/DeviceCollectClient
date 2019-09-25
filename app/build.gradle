@@ -11,6 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 2
+        flavorDimensions "2"
         versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -26,6 +27,20 @@ android {
             }
         }
     }
+
+    productFlavors {
+
+        general_flaver {
+            applicationId "com.nexless.devicecollect.general"
+            resValue "string", "app_name", "设备信息采集"
+        }
+
+        manyu_flaver {
+            applicationId "com.nexless.devicecollect.manyu"
+            resValue "string", "app_name", "门锁测试生产"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

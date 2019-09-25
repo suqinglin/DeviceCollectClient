@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">设备信息采集</string>
+    <!--<string name="app_name">设备信息采集</string>-->
     <!-- 异常 -->
     <string name="timeout_exception">请求超时，请重试</string>
     <string name="network_error">当前网络异常，请检查网络后重试</string>
