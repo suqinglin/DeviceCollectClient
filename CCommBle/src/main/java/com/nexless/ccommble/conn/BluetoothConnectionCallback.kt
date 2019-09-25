@@ -39,10 +39,11 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
         this.hasPrdAck = hasPrdAck
         bluetoothListener = listener
         bluetoothStatus = AtomicInteger(ConnectionConstants.STATUS_CONN_START)
-        timerConnTimeout = Observable.timer(5000, TimeUnit.MILLISECONDS)
+        timerConnTimeout = Observable.timer(10000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    bluetoothStatus.set(ConnectionConstants.STATUS_CONN_TIMEOUT)
                     bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_TIMEOUT)
                 }
     }
@@ -55,8 +56,12 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
             timerConnTimeout = null
         }
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            CommLog.logE(TAG, "onConnectionStateChange->GATT_SUCCESS")
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                CommLog.logE(TAG, "onConnectionStateChange->GATT_SUCCESS")
+                CommLog.logE(TAG, "onConnectionStateChange->bluetoothStatus =" + bluetoothStatus.get())
+                if (bluetoothStatus.get() != ConnectionConstants.STATUS_CONN_START) {
+                    return
+                }
                 bluetoothStatus.set(ConnectionConstants.STATUS_CONN_SUCCESS)
                 bluetoothListener.onConnStatusSucc(ConnectionConstants.STATUS_CONN_SUCCESS)
                 if (gatt != null) {
@@ -194,6 +199,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
                 bluetoothGattCharacteristicWrite?.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                 bluetoothGattCharacteristicWrite?.value = data
                 val isWriteCharacteristic = bluetoothGatt?.writeCharacteristic(bluetoothGattCharacteristicWrite)
+                CommLog.logE(TAG, "writeData string:" + String(data))
                 if (!isWriteCharacteristic!!) {
                     timerWriteTimeout = Observable.timer(10000, TimeUnit.MILLISECONDS)
                             .subscribeOn(Schedulers.io())
@@ -362,7 +368,8 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
             bluetoothGattCharacteristicWrite?.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
             bluetoothGattCharacteristicWrite?.value = data
             bluetoothGatt?.writeCharacteristic(bluetoothGattCharacteristicWrite)
-            CommLog.logE(TAG, "writeFirstPageData data = ${data.size} dataPackages = ${dataPackages.toString().length}")
+            CommLog.logE(TAG, "writeData string1:" + String(data))
+//            CommLog.logE(TAG, "writeFirstPageData data = ${data.size} dataPackages = ${dataPackages.toString().length}")
         } else {
             bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_DATA_WRITE_FAIL)
             CommLog.logE(TAG, "writeFirstPageData data is null or don't has next")
@@ -370,6 +377,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     }
 
     fun writeData(dataPackages: DataPackages, endIdentify: Array<String>?, hasPrdAck: Boolean) {
+        CommLog.logE(TAG, "writeData string2:" + String(dataPackages.getSendData()) + ", length:" + dataPackages.getDataLength())
         CommLog.logE(TAG, "writeData bluetoothStatus = " + bluetoothStatus.get())
         this.dataPackages = dataPackages
         this.endIdentify = endIdentify
@@ -397,6 +405,8 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
         if (bluetoothGatt != null) {
             CommLog.logE(TAG, "disconnect")
             bluetoothGatt!!.disconnect()
+        } else {
+            CommLog.logE(TAG, "bluetoothGatt = null, can not call bluetoothGatt.disconnect()")
         }
     }
 
@@ -408,6 +418,9 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
             CommLog.logE(TAG, "close")
             bluetoothGatt = null
             bluetoothGattService = null
+        } else {
+
+            CommLog.logE(TAG, "bluetoothGatt = null, can not call bluetoothGatt.close()")
         }
     }
 }

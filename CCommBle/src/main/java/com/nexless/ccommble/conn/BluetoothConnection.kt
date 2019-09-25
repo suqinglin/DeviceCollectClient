@@ -102,6 +102,7 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
             override fun onConnStatusFail(status: Int) {
                 super.onConnStatusFail(status)
                 CommLog.logE(TAG, "onConnStatusFail status = $status")
+//                disConnDevice()
                 closeTimerDelyDisconn()
                 closeTimerDelyConn()
 //                bluetoothConnectionCallback?.disConnGatt()

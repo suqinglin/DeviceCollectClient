@@ -66,7 +66,7 @@ class ConnectionHelper private constructor(){
      */
     fun disConnDevice(mac: String){
         connectionMap[mac]?.disConnDevice()
-        removeConncetion(mac)
+        removeConnection(mac)
     }
 
     /**
@@ -106,7 +106,8 @@ class ConnectionHelper private constructor(){
      * 移除连接的缓存
      * @param mac String 设备mac地址
      */
-    private fun removeConncetion(mac: String){
+    private fun removeConnection(mac: String){
+        CommLog.logE(TAG, "BluetoothListener->removeConnection:" + mac)
         connectionMap.remove(mac)
         listenerMap.remove(mac)
     }
@@ -132,7 +133,8 @@ class ConnectionHelper private constructor(){
                             .subscribe{ i ->
                                 listenerMap[mac]?.onConnStatusSucc(i)
                                 if(i == ConnectionConstants.STATUS_CONN_DISCONN){
-                                    removeConncetion(mac)
+                                    CommLog.logE(TAG, "BluetoothListener->createConnection:onConnStatusSucc&removeConnection")
+                                    removeConnection(mac)
                                 }
                             }
                 }
@@ -144,7 +146,8 @@ class ConnectionHelper private constructor(){
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe{ i ->
                                 listenerMap[mac]?.onConnStatusFail(i)
-                                removeConncetion(mac)
+                                CommLog.logE(TAG, "BluetoothListener->createConnection:onConnStatusFail&removeConnection")
+                                removeConnection(mac)
                             }
                 }
 
@@ -154,10 +157,12 @@ class ConnectionHelper private constructor(){
                     Observable.create(ObservableOnSubscribe<ByteArray?> {e -> e.onNext(data!!)})
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe{ s ->
+                                CommLog.logE(TAG, "BluetoothListener->" + listenerMap[mac]?.toString())
                                 listenerMap[mac]?.onDataChange(s)
                             }
                 }
             })
+            CommLog.logE(TAG, "BluetoothListener->createConnection:add")
             connectionMap[mac] = connection
         }
     }

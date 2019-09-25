@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BluetoothUtil {
 
+    private String TAG = "BluetoothConnectionCallback";
     private String mac;
     private SendCmdCallBack cmdCallBack;
 
@@ -42,6 +43,7 @@ public class BluetoothUtil {
 
                     @Override
                     public void onDataChange(@Nullable byte[] data) {
+                        CommLog.logE(TAG, "BluetoothUtil->onDataChange:" + new String(data));
                         if (cmdCallBack != null) {
                             cmdCallBack.onSuccess(new String(data));
                         }
@@ -49,6 +51,7 @@ public class BluetoothUtil {
 
                     @Override
                     public void onConnStatusFail(int status) {
+                        CommLog.logE(TAG, "BluetoothUtil->onConnStatusFail:" + status);
                         if (cmdCallBack != null) {
                             callBack.onFailure(BleStatusUtil.getConnectStatusMsg(status));
                         }
@@ -58,7 +61,7 @@ public class BluetoothUtil {
                     public void onConnStatusSucc(int status) {
 
                     }
-                }, 15000);
+                }, 5000);
     }
 
     public void cancel() {

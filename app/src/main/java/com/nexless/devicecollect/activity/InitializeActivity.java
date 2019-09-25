@@ -68,8 +68,6 @@ public class InitializeActivity extends BaseActivity implements View.OnClickList
                 startActivityForResult(new Intent(this, ManufListActivity.class), REQ_SELECT_MANUF);
                 break;
             case R.id.btn_init_save:
-//                String manufId = edtManufId.getEditableText().toString();
-//                String toolId = edtToolId.getEditableText().toString();
                 if (mSelectManuf == null) {
                     showToast("请选择厂商");
                     return;
@@ -78,19 +76,14 @@ public class InitializeActivity extends BaseActivity implements View.OnClickList
                     showToast("请选择工具");
                     return;
                 }
-//                if (TextUtils.isEmpty(manufId)) {
-//                    showToast("请输入Manuf Id");
-//                    return;
-//                }
-//                if (TextUtils.isEmpty(toolId)) {
-//                    showToast("请输入Tool Id");
-//                    return;
-//                }
-                Intent intent = new Intent(this, ProductActivity.class);
-                intent.putExtra(AppConstants.EXTRA_DEVICE, mSeachDevice);
+//                Intent intent = new Intent(this, ProductActivity.class);
+//                intent.putExtra(AppConstants.EXTRA_DEVICE, mSeachDevice);
+//                intent.putExtra(AppConstants.EXTRA_TOOL_ID, Integer.valueOf("1111"));
+//                intent.putExtra(AppConstants.EXTRA_IS_SELECT_TOOL, cbSeriaPortTool.isChecked());
+//                startActivity(intent);
+
+                Intent intent = new Intent(this, LockTestActivity.class);
                 intent.putExtra(AppConstants.EXTRA_MANUF, mSelectManuf);
-                intent.putExtra(AppConstants.EXTRA_TOOL_ID, Integer.valueOf("1111"));
-                intent.putExtra(AppConstants.EXTRA_IS_SELECT_TOOL, cbSeriaPortTool.isChecked());
                 startActivity(intent);
                 break;
         }

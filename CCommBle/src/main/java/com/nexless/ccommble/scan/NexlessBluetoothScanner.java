@@ -12,8 +12,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Message;
 
+import com.nexless.ccommble.codec.binary.Hex;
 import com.nexless.ccommble.util.CommHandler;
 import com.nexless.ccommble.util.CommLog;
+import com.nexless.ccommble.util.ScanRecordUtil;
 
 /**
  * Created by wxm on 2016/3/26.
@@ -36,8 +38,16 @@ public class NexlessBluetoothScanner implements CommHandler.MessageHandler {
 
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            String uuidStr = null;
+            if (scanRecord != null) {
+                CommLog.logE(TAG, "device:" + device.getName() + ", scanRecord:size->" + scanRecord.length + ",data->" + Hex.encodeHexString(scanRecord));
+                byte[] uuid = ScanRecordUtil.parseFromBytes(scanRecord).getManufacturerSpecificData(89);
+                if (uuid != null) {
+                    uuidStr = Hex.encodeHexString(uuid);
+                }
+            }
             if (mBluetoothScannerCallBack != null) {
-                mBluetoothScannerCallBack.onScannerResultCallBack(device, rssi);
+                mBluetoothScannerCallBack.onScannerResultCallBack(device, rssi, uuidStr);
             }
         }
     };
@@ -50,7 +60,7 @@ public class NexlessBluetoothScanner implements CommHandler.MessageHandler {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 int rssi = intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI);
                 if (mBluetoothScannerCallBack != null) {
-                    mBluetoothScannerCallBack.onScannerResultCallBack(device, rssi);
+                    mBluetoothScannerCallBack.onScannerResultCallBack(device, rssi, null);
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 if (mBluetoothScannerCallBack != null) {
@@ -236,7 +246,7 @@ public class NexlessBluetoothScanner implements CommHandler.MessageHandler {
     }
 
     public interface NexlessScannerCallBack {
-        void onScannerResultCallBack(BluetoothDevice device, int rssi);
+        void onScannerResultCallBack(BluetoothDevice device, int rssi, String uuid);
 
         void onScanFinished();
 

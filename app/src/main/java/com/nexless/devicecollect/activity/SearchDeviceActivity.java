@@ -64,7 +64,7 @@ public class SearchDeviceActivity extends BaseActivity implements AdapterView.On
 
     private NexlessBluetoothScanner.NexlessScannerCallBack mScannerCallback = new NexlessBluetoothScanner.NexlessScannerCallBack() {
         @Override
-        public void onScannerResultCallBack(BluetoothDevice device, int rssi) {
+        public void onScannerResultCallBack(BluetoothDevice device, int rssi, String uuid) {
             if (device != null) {
                 addDevice(device, rssi);
             }

@@ -4,6 +4,7 @@ import com.nexless.devicecollect.model.LoginResponse;
 import com.nexless.devicecollect.model.MacAndTokenResponse;
 import com.nexless.devicecollect.model.ManufListResponse;
 import com.nexless.devicecollect.model.TResponse;
+import com.nexless.devicecollect.model.TResponseNoData;
 import com.nexless.devicecollect.model.UploadDeviceInfoResponse;
 import io.reactivex.Observable;
 import retrofit2.http.Field;
@@ -43,6 +44,17 @@ public interface ApiService {
             @Field("toolId") int toolId,
             @Field("createTime") long createTime,
             @Field("token") String token
+    );
+
+    @FormUrlEncoded
+    @POST("/device/saveManyu2Lock")
+    Observable<TResponseNoData> saveManyu2Lock(
+            @Field("uuid") String uuid,
+            @Field("model") String model,
+            @Field("mac") String mac,
+            @Field("token") String token,
+            @Field("hwVer") String hwVer,
+            @Field("fwVer") String fwVer
     );
 
     @FormUrlEncoded

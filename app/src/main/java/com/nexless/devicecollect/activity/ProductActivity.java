@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ import com.nexless.devicecollect.model.DeviceInfo;
 import com.nexless.devicecollect.model.ManufInfo;
 import com.nexless.devicecollect.model.SearchDeviceBean;
 import com.nexless.devicecollect.model.TResponse;
+import com.nexless.devicecollect.model.TResponseNoData;
 import com.nexless.devicecollect.model.UploadDeviceInfoResponse;
 import com.nexless.devicecollect.util.BluetoothUtil;
 import com.nexless.devicecollect.util.DeviceTypeUtil;
@@ -83,6 +85,8 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     private boolean mHasPrdAck;
     private Disposable timerDelayTimeout;
     private long mTimeStamp;
+    private Button btnStart;
+    private boolean isManyu2Lock = false;
 
     @Override
     public void handleMessage(Message msg) {
@@ -115,10 +119,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         TextView tvManufId = findViewById(R.id.tv_product_manuf_id);
         tvMessage = findViewById(R.id.tv_product_msg);
         tvQr = findViewById(R.id.tv_product_qr);
+        btnStart = findViewById(R.id.btn_product_start);
         LinearLayout llDevice = findViewById(R.id.ll_product_device);
         findViewById(R.id.ll_product_scan_qr).setOnClickListener(this);
 //        findViewById(R.id.ll_product_select_tool).setOnClickListener(this);
-        findViewById(R.id.btn_product_start).setOnClickListener(this);
+        btnStart.setOnClickListener(this);
         findViewById(R.id.btn_product_finish).setOnClickListener(this);
         llDevice.setOnClickListener(this);
 
@@ -131,6 +136,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
             llDevice.setVisibility(View.VISIBLE);
             tvToolName.setVisibility(View.GONE);
         }
+        llDevice.setVisibility(View.GONE);
         tvManufId.setText(String.format(getString(R.string.manuf_pre), manufInfo.getName() + "("
                 + manufInfo.getId() + ")"));
         tvMessage.setMovementMethod(new ScrollingMovementMethod());
@@ -162,6 +168,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                         REQ_SEARCH_DEVICE);
                 break;
             case R.id.btn_product_start:
+                btnStart.setBackgroundColor(getResources().getColor(R.color.blue));
                 if (mDevMac == null) {
                     showToast("请扫描二维码");
                     return;
@@ -172,11 +179,15 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 }
                 mDialogHelper.showProgressDialog();
                 isReaddingInfo = false;
+                isManyu2Lock = false;
                 getDeviceToken();
                 break;
             case R.id.btn_product_finish:
-                ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
+//                ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
                 clearView();
+                Intent intent = getIntent();
+                setResult(RESULT_OK);
+                finish();
                 break;
         }
     }
@@ -211,12 +222,14 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 mDialogHelper.dismissProgressDialog();
                 tvMessage.setText(String.format(getString(R.string.token_result_pre),
                         response.message) + "\n");
+                btnStart.setBackgroundColor(getResources().getColor(R.color.red));
             }
         }, throwable -> {
             mDialogHelper.dismissProgressDialog();
             tvMessage.setText(String.format(
                     getString(R.string.token_result_pre),
                     RxHelper.getInstance().getErrorInfo(throwable)) + "\n");
+            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
         });
     }
 
@@ -241,11 +254,43 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
             if (response.isSuccess()) {
                 tvMessage.append(String.format(getString(R.string.upload_result_pre),
                         "SUCCESS") + "\n");
+                btnStart.setBackgroundColor(getResources().getColor(R.color.green));
             } else {
                 tvMessage.append(String.format(getString(R.string.upload_result_pre),
                         response.message) + "\n");
+                btnStart.setBackgroundColor(getResources().getColor(R.color.red));
             }
         }, throwable -> {
+            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
+            mDialogHelper.dismissProgressDialog();
+            tvMessage.append(String.format(
+                    getString(R.string.upload_result_pre),
+                    RxHelper.getInstance().getErrorInfo(throwable)) + "\n");
+        });
+    }
+
+    private void saveManyu2Lock(DeviceInfo deviceInfo) {
+        Observable<TResponseNoData> observable
+                = ServiceFactory.getInstance().getApiService().saveManyu2Lock(
+                deviceInfo.getUuid(),
+                deviceInfo.getModel(),
+                deviceInfo.getMac(),
+                mToken,
+                deviceInfo.getHwVer(),
+                deviceInfo.getFwVer());
+        RxHelper.getInstance().sendRequestNoData(TAG, observable, tResponseNoData -> {
+            mDialogHelper.dismissProgressDialog();
+            if (tResponseNoData.isSuccess()) {
+                tvMessage.append(String.format(getString(R.string.upload_result_pre),
+                        "SUCCESS") + "\n");
+                btnStart.setBackgroundColor(getResources().getColor(R.color.green));
+            } else {
+                tvMessage.append(String.format(getString(R.string.upload_result_pre),
+                        tResponseNoData.message) + "\n");
+                btnStart.setBackgroundColor(getResources().getColor(R.color.red));
+            }
+        }, throwable -> {
+            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
             mDialogHelper.dismissProgressDialog();
             tvMessage.append(String.format(
                     getString(R.string.upload_result_pre),
@@ -318,7 +363,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void sendCmdToDeviceByFunPos(int ver, int opt) {
-        if (opt <= OPT_READ_DEVICE_INFO_FIRST && DeviceUtil.supportFun(ver, Function.SUPPORT_INFO)) {
+        if (!isManyu2Lock && opt <= OPT_READ_DEVICE_INFO_FIRST && DeviceUtil.supportFun(ver, Function.SUPPORT_INFO)) {
             sendCmdToDevice("?Info", ver, mHasPrdAck, OPT_READ_DEVICE_INFO_FIRST);
         } else if (opt <= OPT_WRITE_TOKEN && DeviceUtil.supportFun(ver, Function.SUPPORT_TORKEN)) {
             sendCmdToDevice("PrdTorken " + Long.valueOf(mToken, 16), ver,
@@ -382,6 +427,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                                 });
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_READ_VERSION:
@@ -398,7 +444,16 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         if (DeviceUtil.supportFun(version, Function.SUPPORT_FUN)) {
                                             sendCmdToDeviceByFunPos(version, OPT_READ_DEVICE_INFO_FIRST);
                                         } else if (version == 2) {
-                                            sendCmdToDeviceByFunPos(Integer.valueOf("07FF", 16), OPT_READ_DEVICE_INFO_FIRST);
+                                            if ("FLLL".equals(mRemark)) {
+                                                isManyu2Lock = true;
+//                                                tvMessage.append("Read Version -> 当前设备无需注册\n");
+//                                                mDialogHelper.dismissProgressDialog();
+//                                                btnStart.setBackgroundColor(getResources().getColor(R.color.green));
+                                                sendCmdToDeviceByFunPos(Integer.valueOf("0401", 16), OPT_READ_DEVICE_INFO_FIRST);
+                                                return;
+                                            } else {
+                                                sendCmdToDeviceByFunPos(Integer.valueOf("07FF", 16), OPT_READ_DEVICE_INFO_FIRST);
+                                            }
                                         } else if (version == 1) {
                                             sendCmdToDeviceByFunPos(Integer.valueOf("0014", 16), OPT_READ_DEVICE_INFO_FIRST);
 //                                            sendCmdToDevice("PrdMac " + new BigInteger(mDevMac, 16),
@@ -407,6 +462,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
                                         tvMessage.append("Read Version -> " + result + "\n");
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_READ_DEVICE_INFO_FIRST:
@@ -419,14 +475,17 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                             } else {
                                                 tvMessage.append("Read Info -> 二维码上的Model与设备中不一致！\n");
                                                 mDialogHelper.dismissProgressDialog();
+                                                btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                             }
                                         } else {
                                             mDialogHelper.dismissProgressDialog();
+                                            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         mDialogHelper.dismissProgressDialog();
                                         tvMessage.append("Read Info -> 数据格式异常\n");
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_TOKEN:
@@ -436,6 +495,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
                                         tvMessage.append("Write Token -> 请重试\n");
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_MAC:
@@ -444,6 +504,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         sendCmdToDeviceByFunPos(ver, OPT_WRITE_SN);
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_SN:
@@ -453,6 +514,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         sendCmdToDeviceByFunPos(ver, OPT_WRITE_TIME);
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_TIME:
@@ -461,6 +523,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         sendCmdToDeviceByFunPos(ver, OPT_WRITE_MANUF_ID);
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_MANUF_ID:
@@ -476,6 +539,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         }
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_TOOL_ID:
@@ -487,6 +551,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         mHandle.sendMessageDelayed(message, 500);
                                     } else {
                                         mDialogHelper.dismissProgressDialog();
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                                 case OPT_WRITE_ERROR_TOKEN:
@@ -500,17 +565,27 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                             .device_info_second_result_pre), result) + "\n");
                                     try {
                                         mDeviceInfo = DeviceUtil.convertDeviceInfo(result);
-                                        if (mDeviceInfo != null && checkResult(mDeviceInfo, ver)) {
+                                        if (mDeviceInfo == null) {
+                                            mDialogHelper.dismissProgressDialog();
+                                            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
+                                            return;
+                                        }
+                                        if (isManyu2Lock) {
+                                            ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
+                                            saveManyu2Lock(mDeviceInfo);
+                                        } else if (checkResult(mDeviceInfo, ver)) {
                                             sendCmdToDevice("PrdTorken " + (Long.valueOf(mToken, 16) + 1),
                                                     0, mHasPrdAck, OPT_WRITE_ERROR_TOKEN);
                                         } else {
                                             mDialogHelper.dismissProgressDialog();
+                                            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                         }
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         mDialogHelper.dismissProgressDialog();
                                         tvMessage.append(String.format(getString(R.string
                                                 .device_info_second_result_pre), "数据格式异常\n"));
+                                        btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                                     }
                                     break;
                             }
@@ -518,6 +593,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
 
                         @Override
                         public void onFailure(String message) {
+                            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
                             mDialogHelper.dismissProgressDialog();
                             switch (opt) {
                                 case OPT_SET_BR:
@@ -558,6 +634,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
             e.printStackTrace();
             mDialogHelper.dismissProgressDialog();
             tvMessage.append("数据转换异常\n");
+            btnStart.setBackgroundColor(getResources().getColor(R.color.red));
         }
     }
 
@@ -613,9 +690,9 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mSearchDevice != null) {
-            ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
-        }
+//        if (mSearchDevice != null) {
+//            ConnectionHelper.getInstance().disConnDevice(mSearchDevice.device.getAddress());
+//        }
         if (timerDelayTimeout != null && !timerDelayTimeout.isDisposed()) {
             timerDelayTimeout.dispose();
             timerDelayTimeout = null;

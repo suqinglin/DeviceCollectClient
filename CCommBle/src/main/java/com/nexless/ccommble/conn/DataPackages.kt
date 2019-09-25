@@ -30,4 +30,12 @@ class DataPackages(data:ByteArray): Iterator<ByteArray> {
         cursor = srcPos + packageSize
         return buf
     }
+
+    fun getSendData(): ByteArray {
+        return sendData
+    }
+
+    fun getDataLength(): Int {
+        return dataLength
+    }
 }

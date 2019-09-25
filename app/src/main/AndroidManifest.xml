@@ -28,7 +28,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,6 +41,8 @@
         <activity android:name=".activity.ProductActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.ManufListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.LockTestActivity"
             android:screenOrientation="portrait" />
     </application>
 

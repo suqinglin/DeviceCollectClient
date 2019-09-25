@@ -5,4 +5,9 @@
     <color name="colorAccent">#D81B60</color>
     <color name="transparent">#00000000</color>
     <color name="comm_press">#f7f7f7</color>
+    <color name="gray">#CCCCCC</color>
+    <color name="green">#00FF00</color>
+    <color name="red">#FF0000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#6666FF</color>
 </resources>
