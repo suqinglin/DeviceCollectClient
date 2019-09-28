@@ -137,11 +137,11 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.btn_add_finger:
                 mDialogHelper.showProgressDialog();
-                sendCommand(AppConstants.CMD_REQ_INS_FP, OPT_ADD_LOCK);
+                sendCommand(AppConstants.CMD_REQ_INS_FP, OPT_ADD_LOCK, 15000);
                 break;
             case R.id.btn_touch_test:
                 mDialogHelper.showProgressDialog();
-                sendCommand(AppConstants.CMD_REQ_TOUCH, OPT_ADD_LOCK);
+                sendCommand(AppConstants.CMD_REQ_TOUCH, OPT_ADD_LOCK, 5000);
                 break;
             case R.id.btn_sleep:
                 mDialogHelper.showProgressDialog();
@@ -149,7 +149,7 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.btn_delete:
                 mDialogHelper.showProgressDialog();
-                sendCommand(AppConstants.CMD_REQ_DEL, OPT_ADD_LOCK);
+                sendCommand(AppConstants.CMD_REQ_DEL, OPT_ADD_LOCK, 0);
                 break;
             case R.id.btn_next:
                 if (!isMyLock) {
@@ -180,7 +180,7 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
                         })
                         .show();
                 break;
-            case R.id.btn_burn:
+            case R.id.btn_burn: // 老化模式
                 mDialogHelper.showProgressDialog();
                 sendCommand(AppConstants.CMD_REQ_BURN, OPT_ADD_LOCK);
                 break;
@@ -222,6 +222,10 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
     };
 
     private void sendCommand(String cmd, int opt) {
+        sendCommand(cmd, opt, 3000);
+    }
+
+    private void sendCommand(String cmd, int opt, int delayTime) {
         if (mDevice == null) {
             showToast("请添加钥匙！");
             mDialogHelper.dismissProgressDialog();
@@ -294,7 +298,7 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
                         showToast(message);
                         tvLogs.append(message + "\n");
                     }
-                });
+                }, delayTime);
     }
 
     private void clear() {

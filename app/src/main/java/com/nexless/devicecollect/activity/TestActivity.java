@@ -152,7 +152,7 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
                                 break;
                         }
                     }
-                });
+                }, 3000);
     }
 
     @Override

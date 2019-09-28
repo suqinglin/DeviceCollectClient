@@ -629,7 +629,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     break;
                             }
                         }
-                    });
+                    }, 5000);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             mDialogHelper.dismissProgressDialog();

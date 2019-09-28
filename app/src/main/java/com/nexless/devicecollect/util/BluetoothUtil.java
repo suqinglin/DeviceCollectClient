@@ -28,7 +28,7 @@ public class BluetoothUtil {
         this.mac = mac;
     }
 
-    public void sendCommand(String cmd, boolean hasPrdAck, SendCmdCallBack callBack) {
+    public void sendCommand(String cmd, boolean hasPrdAck, SendCmdCallBack callBack, int delayTime) {
         cmdCallBack = callBack;
         byte[] sendData = Encrypt.sendCommandEncrypt(cmd);
         CommLog.logE("BluetoothUtil", "sendData:" + Hex.encodeHexString(sendData).toUpperCase());
@@ -61,7 +61,7 @@ public class BluetoothUtil {
                     public void onConnStatusSucc(int status) {
 
                     }
-                }, 5000);
+                }, delayTime);
     }
 
     public void cancel() {

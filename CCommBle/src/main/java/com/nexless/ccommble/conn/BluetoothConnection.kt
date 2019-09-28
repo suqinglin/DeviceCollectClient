@@ -136,6 +136,7 @@ class BluetoothConnection(context: Context,devName: String, mac: String, endIden
                     CommLog.logE(TAG, "autoDisconnTime == 0")
                     bluetoothConnectionCallback?.disConnGatt()
                 } else if (autoDisconnTime > 0) {
+                    CommLog.logE(TAG, "onDataChange:autoDisconnTime->" + autoDisconnTime)
                     timerDelyDisconn = Observable.timer(autoDisconnTime.toLong(), TimeUnit.MILLISECONDS)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
