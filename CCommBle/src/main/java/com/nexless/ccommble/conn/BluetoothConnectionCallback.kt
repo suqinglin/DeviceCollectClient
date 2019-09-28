@@ -377,7 +377,6 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
     }
 
     fun writeData(dataPackages: DataPackages, endIdentify: Array<String>?, hasPrdAck: Boolean) {
-        CommLog.logE(TAG, "writeData string2:" + String(dataPackages.getSendData()) + ", length:" + dataPackages.getDataLength())
         CommLog.logE(TAG, "writeData bluetoothStatus = " + bluetoothStatus.get())
         this.dataPackages = dataPackages
         this.endIdentify = endIdentify
