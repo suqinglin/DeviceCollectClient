@@ -112,8 +112,8 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         mToolId = intent.getIntExtra(AppConstants.EXTRA_TOOL_ID, 0);
         isSelectTool = intent.getBooleanExtra(AppConstants.EXTRA_IS_SELECT_TOOL, false);
 
-        AppTitleBar titleBar = findViewById(R.id.titlebar);
-        titleBar.setRightListener("TEST", this);
+//        AppTitleBar titleBar = findViewById(R.id.titlebar);
+//        titleBar.setRightListener("TEST", this);
         tvDevice = findViewById(R.id.tv_product_device);
         tvToolName = findViewById(R.id.tv_product_tool_name);
         TextView tvManufId = findViewById(R.id.tv_product_manuf_id);
@@ -274,7 +274,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 = ServiceFactory.getInstance().getApiService().saveManyu2Lock(
                 deviceInfo.getUuid(),
                 deviceInfo.getModel(),
-                deviceInfo.getMac(),
+                mSearchDevice.device.getAddress().replace(":", ""),
                 mToken,
                 deviceInfo.getHwVer(),
                 deviceInfo.getFwVer());

@@ -6,10 +6,10 @@
     android:orientation="vertical">
 
     <com.nexless.devicecollect.view.AppTitleBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:leftBtn="false"
-        app:title="初始化" />
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:leftBtn="false"
+    app:title="初始化" />
 
     <LinearLayout
         android:id="@+id/ll_init_select_manuf"
@@ -49,6 +49,7 @@
         android:background="#CCCCCC" />
 
     <CheckBox
+        android:visibility="gone"
         android:id="@+id/cb_init_seria_port_tool"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,6 +59,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:visibility="gone"
         android:background="#CCCCCC" />
 
     <LinearLayout

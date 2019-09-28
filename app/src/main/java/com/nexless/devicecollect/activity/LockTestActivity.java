@@ -25,6 +25,7 @@ import com.nexless.devicecollect.adapter.KeyboardAdapter;
 import com.nexless.devicecollect.model.ManufInfo;
 import com.nexless.devicecollect.model.SearchDeviceBean;
 import com.nexless.devicecollect.util.BluetoothUtil;
+import com.nexless.devicecollect.view.AppTitleBar;
 import com.nexless.devicecollect.view.DialogHelper;
 
 import java.util.concurrent.TimeUnit;
@@ -62,6 +63,7 @@ public class LockTestActivity extends BaseActivity implements View.OnClickListen
 
         manufInfo = getIntent().getParcelableExtra(AppConstants.EXTRA_MANUF);
 
+        AppTitleBar titleBar = findViewById(R.id.titlebar);
         btnAddLock = findViewById(R.id.btn_add_lock);
         btnOpenLock = findViewById(R.id.btn_open_lock);
         btnAddFinger = findViewById(R.id.btn_add_finger);
