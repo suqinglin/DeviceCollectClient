@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.nexless.ccommble.util.CommLog;
+import com.nexless.ccommble.util.CommUtil;
 import com.nexless.devicecollect.R;
 import com.nexless.devicecollect.httpservice.RxHelper;
 import com.nexless.devicecollect.httpservice.ServiceFactory;
@@ -38,6 +40,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         mEdtUserPhone.setText(AppPreference.getString(AppPreference.USER_PHONE, ""));
         mEdtPassword.setText(AppPreference.getString(AppPreference.USER_PASSWORD, ""));
         findViewById(R.id.btn_login).setOnClickListener(this);
+        TextView tvVersion = findViewById(R.id.tv_login_version);
+        tvVersion.setText("Ver. " + CommUtil.getVersionName(this));
     }
 
     @Override
